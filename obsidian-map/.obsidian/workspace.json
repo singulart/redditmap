@@ -1,0 +1,170 @@
+{
+  "main": {
+    "id": "9a5fb7a2b6a2a5e9",
+    "type": "split",
+    "children": [
+      {
+        "id": "2497ace8d13a813b",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "0b103889009fad3c",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a63a3d9793b810b3",
+    "type": "split",
+    "children": [
+      {
+        "id": "5bf6fcc0aa9a6b61",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b20092d5f00a943f",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b5f1fa9d66f66130",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "35d07dbcb58cc62d",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 432.5
+  },
+  "right": {
+    "id": "54594c0a6e1480a4",
+    "type": "split",
+    "children": [
+      {
+        "id": "7b0282f5831c3091",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1adcd0ddc44a211e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "8d3b85eb0d71f552",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "4ac6540eace9e1bc",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "766b0b721e70e3a6",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "0b103889009fad3c",
+  "lastOpenFiles": [
+    "sg-00628290b5305ef7e.md",
+    "stage-das-search-cluster.md",
+    "dev-das-search-cluster.md",
+    "ECS SERV sonarqube.md",
+    "test-das-satsyil-instance-one.md",
+    "preview-das-search-domain.md",
+    "dev-das-opensearch-golden.md",
+    "test-das-search-cluster.md",
+    "dev-das-search-domain.md",
+    "preview-das-search-cluster.md",
+    "test-das-search-domain.md",
+    "ECS SERV dev-das-batch-service.md",
+    "ECS SERV stage-das-useradmin-service.md",
+    "ECS SERV stage-das-import-service.md",
+    "ECS SERV preview-das-authorities-service.md",
+    "ECS SERV dev-das-auth-service.md",
+    "ECS SERV stage-das-users-service.md",
+    "ECS SERV preview-das-auth-service.md",
+    "ECS SERV test-das-batch-service.md",
+    "ECS SERV stage-das-batch-service.md",
+    "ECS SERV test-das-authorities-service.md",
+    "ECS SERV stage-das-search-service.md",
+    "ECS SERV test-das-import-service.md",
+    "ECS SERV stage-das-auth-service.md",
+    "ECS SERV test-das-descriptions-service.md",
+    "ECS SERV test-das-users-service.md"
+  ]
+}
