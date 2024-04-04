@@ -29,7 +29,7 @@ def remove_subreddit(file, pattern: str):
     if result.stderr: 
         print(result.stderr)
 
-def remove_subreddit_if_unique_match(directory, file, match):
+def remove_irrelevant_subreddits(directory, match):
     matching_files = grep_search(directory, match)
         
     # If there's exactly one matching file, remove the reference to this sub from the file
@@ -51,7 +51,7 @@ def process_files(directory, regex_pattern):
             # print(set(matches))
             
             for match in set(matches):
-                remove_subreddit_if_unique_match(directory, file, match)
+                remove_irrelevant_subreddits(directory, match)
 
 # Example usage
 directory = './cleanup-experiment'
