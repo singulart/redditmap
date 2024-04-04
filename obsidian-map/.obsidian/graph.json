@@ -6,8 +6,16 @@
   "hideUnresolved": false,
   "showOrphans": true,
   "collapse-color-groups": true,
-  "colorGroups": [],
-  "collapse-display": true,
+  "colorGroups": [
+    {
+      "query": "Redditor",
+      "color": {
+        "a": 1,
+        "rgb": 7658614
+      }
+    }
+  ],
+  "collapse-display": false,
   "showArrow": false,
   "textFadeMultiplier": 0,
   "nodeSizeMultiplier": 1,
@@ -17,6 +25,6 @@
   "repelStrength": 15.0276692708333,
   "linkStrength": 1,
   "linkDistance": 395,
-  "scale": 0.3994680937509433,
+  "scale": 2.6143973667722755,
   "close": true
 }
