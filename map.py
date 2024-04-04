@@ -1,3 +1,7 @@
+# Cleanup of noise subreddits:
+# sed -i -- 's/\[\[AskReddit\]\]//g' obsidian-map/*.md
+
+
 import requests
 import os
 
