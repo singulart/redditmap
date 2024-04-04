@@ -2,6 +2,9 @@ import os
 import re
 import subprocess
 
+# Any subreddit that is interacted with by less than 'link_weight_to_remove' Redditors will be removed from the map
+link_weight_to_remove = 5
+
 def grep_search(directory, pattern: str):
     # Prepare the grep command. Use -l to only output filenames and -E for extended regex
     pattern = pattern.replace('[', '\\[').replace(']', '\\]')
@@ -30,9 +33,10 @@ def remove_subreddit_if_unique_match(directory, file, match):
     matching_files = grep_search(directory, match)
         
     # If there's exactly one matching file, remove the reference to this sub from the file
-    if len(matching_files) == 1:
-        remove_subreddit(matching_files[0], match.replace('[', '\\[').replace(']', '\\]'))
-        print(f"Deleted subreddit in {matching_files[0]}")
+    if len(matching_files) <= link_weight_to_remove:
+        for f in set(matching_files):
+            remove_subreddit(f, match.replace('[', '\\[').replace(']', '\\]'))
+            print(f"Deleted subreddit in {matching_files[0]}")
 
 def process_files(directory, regex_pattern):
     for file in os.listdir(directory):
