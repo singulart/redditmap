@@ -2,3 +2,4 @@ __pycache__/
 .vscode/
 cleanup-experiment
 obsidian-map/*.md
+analysis/
