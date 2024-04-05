@@ -3,7 +3,7 @@ import re
 import subprocess
 
 # Any subreddit that is interacted with by less than 'link_weight_to_remove' Redditors will be removed from the map
-link_weight_to_remove = 5
+link_weight_to_remove = 100 
 
 def grep_search(directory, pattern: str):
     # Prepare the grep command. Use -l to only output filenames and -E for extended regex
