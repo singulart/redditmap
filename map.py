@@ -73,7 +73,7 @@ with open('backlog.txt', 'w') as usernames_write:
             print(api_pagination_cursor)
     
 
-print('Done collecting users') 
+# print('Done collecting users') 
 
 with open('backlog.txt', 'r') as redditors_backlog:
     while redditor := redditors_backlog.readline():
