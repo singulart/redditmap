@@ -1,8 +1,11 @@
 import requests
 import time
 import os
+import threading
 
-user_agent = 'web:net.ua.singulart:v0.1.0 (by /u/reddit)'
+minor_version = 1
+user_agent = f'web:net.ua.singulart:v0.3.{minor_version} (by /u/reddit)'
+
 
 def get_api_token():
     if 'CLIENT_ID' not in os.environ and 'CLIENT_SECRET' not in os.environ: 
@@ -41,13 +44,11 @@ def handle_api_call(reddit_api, headers, params = {}):
             rate_limit_reset_in = api_response.headers['X-Ratelimit-Reset']
             print(f'Sleeping until rate limit resets... {rate_limit_reset_in} sec.')
             time.sleep(int(rate_limit_reset_in) + 5) # sleep needed time + some extra seconds
-        if api_response.status_code == 403:
-            session_token = get_api_token();
-            headers['Authorization'] = f'Bearer {session_token}'
-            print(f'Token expired... Requested new one.')
-            time.sleep(5)
+        elif api_response.status_code == 403:
+            print(f'Token expired... {api_response.text}')
+            return None
         elif api_response.status_code != 200:
             print(f'Error code {api_response.status_code} with payload: {api_response.text}')
-            return {"data": {"children": [{"data": {"subreddit": "dummy"}}]}}
+            return None
         else:             
             return api_response.json()
