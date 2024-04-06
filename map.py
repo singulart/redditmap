@@ -7,50 +7,12 @@ from apiclient import *
 
 reddit_api = 'https://oauth.reddit.com'
 blacklist_usernames = ['AutoModerator', '[deleted]']
-start_subreddit = 'HENRYFinance'
 
-author_expression = parse('$..author')
+subreddit_expression = parse('$..subreddit')
 
 session_token = get_api_token()
 
-api_pagination_cursor = None;
-with open('backlog.txt', 'w') as usernames_write:
-    while True:
-        sub_posts_response = handle_api_call(f'{reddit_api}/r/{start_subreddit}/new',
-                    headers={
-                        'Authorization': f'Bearer {session_token}',
-                        'User-Agent': user_agent
-                    },
-                    params={
-                        'limit': 100,
-                        'after': api_pagination_cursor
-                    }
-        )['data']
-        authors = [record['data']['author'] for record in sub_posts_response['children']]
-        
-        
-        for record in sub_posts_response['children']:
-            artcle_comments_response = handle_api_call(f"{reddit_api}/r/{start_subreddit}/comments/{record['data']['id']}",
-                        headers={
-                            'Authorization': f'Bearer {session_token}',
-                            'User-Agent': user_agent
-                        }
-            )
-            authors.extend([match.value for match in author_expression.find(artcle_comments_response)])
-        
-        
-        authors_set = set(authors)
-        print('\n'.join(authors_set), file=usernames_write)
-        print(f'Logged {len(authors_set)} users')
-        
-        if 'after' not in sub_posts_response or sub_posts_response['after'] is None: 
-            break
-        else:
-            api_pagination_cursor = sub_posts_response['after']
-            print(api_pagination_cursor)
-    
-
-# print('Done collecting users') 
+api_pagination_cursor = None
 
 with open('backlog.txt', 'r') as redditors_backlog:
     while redditor := redditors_backlog.readline():
@@ -67,24 +29,29 @@ with open('backlog.txt', 'r') as redditors_backlog:
             
             print('Fetching Redditor {} posts...'.format(redditor.rstrip()))
             api_pagination_cursor = None;
+            subreddits = []
             while True:
                 posts_response = handle_api_call(f'{reddit_api}/user/{redditor}/submitted',
-                            headers={
-                                'Authorization': f'Bearer {session_token}',
-                                'User-Agent': user_agent
-                            },
-                            params={
-                                'limit': 100,
-                                'after': api_pagination_cursor
-                            }
-                )['data']
-                subreddits = set(['[[{}]]'.format(record['data']['subreddit']) for record in posts_response['children']]) 
-                print(', '.join(subreddits), file=obsidian_note_file)
+                    headers= {
+                        'Authorization': f'Bearer {session_token}',
+                        'User-Agent': user_agent
+                    },
+                    params={
+                        'limit': 100,
+                        'after': api_pagination_cursor
+                    }
+                )
+                if not posts_response or 'data' not in posts_response:
+                    print('Refreshing token')
+                    session_token = get_api_token()
+                    continue
+                
+                subreddits.extend(['[[{}]]'.format(match.value) for match in subreddit_expression.find(posts_response)]) 
                     
-                if 'after' not in posts_response or posts_response['after'] is None: # we're at last page
+                if 'after' not in posts_response['data'] or posts_response['data']['after'] is None: # we're at last page
                     break
                 else:
-                    api_pagination_cursor = posts_response['after']
+                    api_pagination_cursor = posts_response['data']['after']
                     print(api_pagination_cursor)
                     
             print('Fetching Redditor {} comments...'.format(redditor.rstrip()))
@@ -92,21 +59,27 @@ with open('backlog.txt', 'r') as redditors_backlog:
 
             while True:
                 comments_response = handle_api_call(f'{reddit_api}/user/{redditor}/comments',
-                            headers={
-                                'Authorization': f'Bearer {session_token}',
-                                'User-Agent': user_agent
-                            },
-                            params={
-                                'limit': 100,
-                                'after': api_pagination_cursor
-                            }
-                )['data']
+                    headers= {
+                        'Authorization': f'Bearer {session_token}',
+                        'User-Agent': user_agent
+                    },
+                    params={
+                        'limit': 100,
+                        'after': api_pagination_cursor
+                    }
+                )
+                if not comments_response:
+                    print('Refreshing token')
+                    session_token = get_api_token()
+                    continue
 
-                subreddits = set(['[[{}]]'.format(record['data']['subreddit']) for record in comments_response['children']]) 
-                print(', '.join(subreddits), file=obsidian_note_file)
+                subreddits.extend(['[[{}]]'.format(match.value) for match in subreddit_expression.find(comments_response)]) 
                     
-                if 'after' not in comments_response or comments_response['after'] is None: 
+                if 'after' not in comments_response['data'] or comments_response['data']['after'] is None: 
                     break
                 else:
-                    api_pagination_cursor = comments_response['after']
+                    api_pagination_cursor = comments_response['data']['after']
                     print(api_pagination_cursor)
+                    
+            print(', '.join(set(subreddits)), file=obsidian_note_file)
+
