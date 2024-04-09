@@ -1,16 +1,19 @@
 from apiclient import *
 from jsonpath_ng import parse
 
-start_subreddit = 'HENRYFinance'
-reddit_api = 'https://oauth.reddit.com'
-author_expression = parse('$..author')
+from processusers import process_redditor_activity
 
-session_token = get_api_token()
-api_pagination_cursor = None
+def main():
+    start_subreddit = 'HENRYFinance'
+    reddit_api = 'https://oauth.reddit.com'
+    author_expression = parse('$..author')
 
-with open('backlog.txt', 'w') as usernames_write:
+    session_token = get_api_token()
+    api_pagination_cursor = None
+
+    redditors = []
     while True:
-        sub_posts_response = handle_api_call(f'{reddit_api}/r/{start_subreddit}/new',
+        posts_response = handle_api_call(f'{reddit_api}/r/{start_subreddit}/new',
             headers={
                 'Authorization': f'Bearer {session_token}',
                 'User-Agent': user_agent
@@ -20,17 +23,17 @@ with open('backlog.txt', 'w') as usernames_write:
                 'after': api_pagination_cursor
             }
         )
-        if not sub_posts_response:
+        if not posts_response:
             print('Refreshing token')
             session_token = get_api_token()
             continue
         else: 
-            sub_posts_response = sub_posts_response['data']
+            posts_response = posts_response['data']
         
-        authors = [record['data']['author'] for record in sub_posts_response['children']]
+        redditors.extend([record['data']['author'] for record in posts_response['children']])
         
         
-        for record in sub_posts_response['children']:
+        for record in posts_response['children']:
             artcle_comments_response = handle_api_call(f"{reddit_api}/r/{start_subreddit}/comments/{record['data']['id']}",
                         headers={
                             'Authorization': f'Bearer {session_token}',
@@ -42,17 +45,25 @@ with open('backlog.txt', 'w') as usernames_write:
                 session_token = get_api_token()
                 continue
 
-            authors.extend([match.value for match in author_expression.find(artcle_comments_response)])
-            
-        authors_set = set(authors)
-        print('\n'.join(authors_set), file=usernames_write)
-        print(f'Logged {len(authors_set)} users')
+            redditors.extend([match.value for match in author_expression.find(artcle_comments_response)])
+                    
         
-        if 'after' not in sub_posts_response['data'] or sub_posts_response['data']['after'] is None: 
+        print(f'Found {len(redditors)} non-unique users so far..')
+        
+        if 'after' not in posts_response or posts_response['after'] is None: 
             break
         else:
-            api_pagination_cursor = sub_posts_response['data']['after']
+            api_pagination_cursor = posts_response['after']
             print(api_pagination_cursor)
-    
+        
 
-print('Done collecting users') 
+    redditor_set = set(redditors)
+    print(f'Total unique redditors: {len(redditor_set)}')
+
+    for redditor in redditor_set:
+        process_redditor_activity.delay(redditor.rstrip()) # push to Redis
+
+    print(f'Sent users to Redis. All OK.')
+
+if __name__ == "__main__":
+    main()
