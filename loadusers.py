@@ -13,7 +13,7 @@ def main():
 
     redditors = []
     while True:
-        sub_posts_response = handle_api_call(f'{reddit_api}/r/{start_subreddit}/new',
+        posts_response = handle_api_call(f'{reddit_api}/r/{start_subreddit}/new',
             headers={
                 'Authorization': f'Bearer {session_token}',
                 'User-Agent': user_agent
@@ -23,17 +23,17 @@ def main():
                 'after': api_pagination_cursor
             }
         )
-        if not sub_posts_response:
+        if not posts_response:
             print('Refreshing token')
             session_token = get_api_token()
             continue
         else: 
-            sub_posts_response = sub_posts_response['data']
+            posts_response = posts_response['data']
         
-        redditors.extend([record['data']['author'] for record in sub_posts_response['children']])
+        redditors.extend([record['data']['author'] for record in posts_response['children']])
         
         
-        for record in sub_posts_response['children']:
+        for record in posts_response['children']:
             artcle_comments_response = handle_api_call(f"{reddit_api}/r/{start_subreddit}/comments/{record['data']['id']}",
                         headers={
                             'Authorization': f'Bearer {session_token}',
@@ -50,10 +50,10 @@ def main():
         
         print(f'Found {len(redditors)} non-unique users so far..')
         
-        if 'after' not in sub_posts_response or sub_posts_response['after'] is None: 
+        if 'after' not in posts_response or posts_response['after'] is None: 
             break
         else:
-            api_pagination_cursor = sub_posts_response['after']
+            api_pagination_cursor = posts_response['after']
             print(api_pagination_cursor)
         
 
@@ -61,7 +61,7 @@ def main():
     print(f'Total unique redditors: {len(redditor_set)}')
 
     for redditor in redditor_set:
-        process_redditor_activity.delay(redditor)
+        process_redditor_activity.delay(redditor.rstrip()) # push to Redis
 
     print(f'Sent users to Redis. All OK.')
 

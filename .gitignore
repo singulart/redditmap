@@ -4,3 +4,5 @@ cleanup-experiment
 obsidian-map/*.md
 analysis/
 appsconfig.json
+tokens.txt
+
