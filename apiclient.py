@@ -32,6 +32,23 @@ def get_api_token():
     print('Obtained Reddit JWT token')
     return session_token
 
+def get_access_token(reddit_oauth2_client_id, reddit_oauth2_client_secret, user_agent):
+
+    auth_token_response = requests.post(
+                'https://www.reddit.com/api/v1/access_token', 
+                auth = (reddit_oauth2_client_id, reddit_oauth2_client_secret), # basic auth base64-encoded
+                headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'User-Agent': user_agent # NEVER lie about your User-Agent. 
+                },
+                data = {
+                    'grant_type': 'client_credentials', # https://auth0.com/docs/authenticate/login/oidc-conformant-authentication/oidc-adoption-client-credentials-flow
+                    'scope': 'history read'
+                }
+    )
+
+    return auth_token_response.json()['access_token']
+
 def handle_api_call(reddit_api, headers, params = {}):
     while True:
         api_response = requests.get(reddit_api, headers=headers, params=params)
