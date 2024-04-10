@@ -1,23 +1,20 @@
 # Cleanup of noise subreddits:
 # sed -i -- 's/\[\[AskReddit\]\]//g' obsidian-map/*.md
 
+from celery import Celery
+from celery.utils.log import get_task_logger
 from jsonpath_ng import parse
 import os
-import logging
 import multiprocessing
+
 from oauth import replace_token
 from apiclient import *
-from celery.utils.log import get_task_logger
-from celery import Celery
 
 reddit_api = 'https://oauth.reddit.com'
 blacklist_usernames = ['AutoModerator', '[deleted]']
 
 subreddit_expression = parse('$..subreddit')
 
-api_pagination_cursor = None
-
-logging.basicConfig(filename='myapp.log', level=logging.INFO)
 logger = get_task_logger(__name__)
 
 app = Celery(config_source='celeryconfig')
@@ -33,10 +30,11 @@ def process_redditor_activity(redditor):
     if redditor in blacklist_usernames: 
         return
 
+    with open('noise_subreddits.txt', 'r') as noise_file:
+        noise_subs = noise_file.read().splitlines()
+
     # Celery threads are named ForkPoolThread-1, ForkPoolThread-2, ... (last character is a digit)    
-    logger.info(multiprocessing.current_process().name)
     unique_thread_number = int(multiprocessing.current_process().name[-1])
-    logger.info(f'Going to use token #{unique_thread_number}')
     with open('tokens.txt', 'r') as token_file:
         tokens = token_file.read().splitlines()
         token_to_use = tokens[unique_thread_number - 1].rstrip()
@@ -66,7 +64,7 @@ def process_redditor_activity(redditor):
                 replace_token(unique_thread_number - 1)
                 break
             
-            subreddits.extend(['[[{}]]'.format(match.value) for match in subreddit_expression.find(posts_response)]) 
+            subreddits.extend(['[[{}]]'.format(match.value) for match in subreddit_expression.find(posts_response) if match.value not in noise_subs]) 
                 
             if 'after' not in posts_response['data'] or posts_response['data']['after'] is None: # we're at last page
                 break
@@ -93,7 +91,7 @@ def process_redditor_activity(redditor):
                 replace_token(unique_thread_number - 1)
                 break
 
-            subreddits.extend(['[[{}]]'.format(match.value) for match in subreddit_expression.find(comments_response)]) 
+            subreddits.extend(['[[{}]]'.format(match.value) for match in subreddit_expression.find(comments_response) if match.value not in noise_subs]) 
                 
             if 'after' not in comments_response['data'] or comments_response['data']['after'] is None: 
                 break
