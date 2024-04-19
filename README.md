@@ -34,15 +34,15 @@ Reddit allows 3 (three) [developer applications](https://old.reddit.com/prefs/ap
 }
 ```
 
-## Subreddits scraping: order of execution
+## Subreddit names downloading: order of execution
 
 ### Run Redis docker container and execute the script:
 
 [text](best.subs.grab.publisher.py)
 
-Note: Update the counter if needed (currently set to 1285)
+Note: Update the counter inside if needed (currently set to 1285)
 
-### Run Celery task that grabs subreddits and saves to SQLite3 db
+### Run Celery task that fetches subreddits and saves to SQLite3 db
 
 `celery --app=savebestcommunities worker --concurrency=32 -l info`
 
@@ -64,6 +64,13 @@ insert into reddit_deduped select sub from (select sub, count(sub) as cnt from r
 insert into reddit_deduped select distinct(sub) from (select sub, count(sub) as cnt from reddit_with_duplicates group by sub having cnt > 1);
 ```
 
+### Fetch 'new' subreddits, if needed
+
+`CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 savenewcommunities.py`
+
+I found this useful, as it added 16k unique subreddits (5%) to ~310k of subreddits grabbed in previous step
+
+
 ## User Activity processing: order of execution
 
 ### Get and save necessary Reddit tokens
@@ -71,9 +78,9 @@ insert into reddit_deduped select distinct(sub) from (select sub, count(sub) as 
 Regardless of how many Reddit apps you will use in parallel for data processing, you'd need to create corresponding Reddit tokens in advance. Assuming your `appconfig.json` is ready, run `python3 oauth.py` which will produce `tokens.txt` output file. 
 
 
-### Load users from a subreddit of interest
+### Fetch redditors from a subreddit of interest
 
-`CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 loadusers.py`
+`CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 redditors.publisher.py`
 
 This script pushes data for downstream processing into Redis. 
 
