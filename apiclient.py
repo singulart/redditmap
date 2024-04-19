@@ -52,7 +52,8 @@ def get_access_token(reddit_oauth2_client_id, reddit_oauth2_client_secret, user_
 def handle_api_call(reddit_api, headers, params = {}):
     while True:
         api_response = requests.get(reddit_api, headers=headers, params=params)
-        
+        if 'X-Ratelimit-Remaining' not in api_response.headers: 
+            return api_response.json()
         rate_limit_remaining = api_response.headers['X-Ratelimit-Remaining']
         if rate_limit_remaining and float(rate_limit_remaining) < 10: # preventive check for low remaining requests
             print(f'Low rate limit remaining requests... {rate_limit_remaining}')

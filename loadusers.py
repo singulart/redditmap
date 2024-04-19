@@ -61,8 +61,8 @@ def main():
     session_token = get_api_token()
 
     redditors = []
-    # process_posts_type('new', redditors, session_token)
-    # process_posts_type('top', redditors, session_token)
+    process_posts_type('new', redditors, session_token)
+    process_posts_type('top', redditors, session_token)
     process_posts_type('hot', redditors, session_token)
     process_posts_type('controversial', redditors, session_token)
 
