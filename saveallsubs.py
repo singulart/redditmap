@@ -1,3 +1,9 @@
+# Saves names of all new Reddit subreddits to a database table
+
+# Filters used:
+# 1. Subscribers number
+# 2. Public subreddits only
+
 import sqlite3
 from tqdm import tqdm
 from jsonpath_ng.ext import parse
@@ -5,15 +11,11 @@ from apiclient import *
 
 reddit_api = 'https://oauth.reddit.com'
 
-# Filters used:
-# 1. Subscribers number
-# 2. Public subreddits only
 subreddit_type = 'public'
 minimum_subscribers = 50
 subreddit_name_expression = parse(f"$..children[?(@.data.subreddit_type == {subreddit_type} & @.data.subscribers >= {minimum_subscribers})]..display_name")
 # subreddit_name_expression = parse("$..display_name")
 
-# Saves names of all new Reddit subreddits to a database table
 
 def main():
 

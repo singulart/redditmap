@@ -1,6 +1,6 @@
 
 broker_url = 'redis://localhost:6379/0'
 
-imports = ('loadusers', 'processusers')
+imports = ('processusers', 'savebestcommunities')
 
 result_backend = 'redis://localhost:6379/0'
