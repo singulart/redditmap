@@ -22,7 +22,6 @@ app = Celery(config_source='celeryconfig')
 @app.task(name='Process Redditor activity')
 def process_redditor_activity(redditor):
     
-    
     file_path = './obsidian-map/{}.md'.format(redditor)
     if os.path.exists(file_path): 
         logger.info('Redditor {} already processed'.format(redditor))

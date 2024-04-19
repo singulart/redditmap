@@ -53,4 +53,4 @@ Spin up several Celery worker tasks:
 
 `celery --app=processusers worker --concurrency=<number of apps in appconfig.json> -l info`
 
-NOTE: Celery tasks can be ran in parallel with users collecting. If there is no user to process, the process will quietly wait.
+NOTE: Celery worker tasks can be ran in parallel with users collecting. If there is no user to process, workers will quietly wait.
