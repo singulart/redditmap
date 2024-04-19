@@ -34,7 +34,37 @@ Reddit allows 3 (three) [developer applications](https://old.reddit.com/prefs/ap
 }
 ```
 
-## Order of execution
+## Subreddits scraping: order of execution
+
+### Run Redis docker container and execute the script:
+
+[text](best.subs.grab.publisher.py)
+
+Note: Update the counter if needed (currently set to 1285)
+
+### Run Celery task that grabs subreddits and saves to SQLite3 db
+
+`celery --app=savebestcommunities worker --concurrency=32 -l info`
+
+Note: this may produce a lot of 429 errors. 
+
+### Check data in SQLite
+
+`sqlite3 reddit.db`
+
+`select count(*) from reddit_subs_best;`
+
+### Deduplicate records
+
+Assuming "reddit_with_duplicates" is the name of the table containing duplicated records...
+
+```sql
+insert into reddit_deduped select sub from (select sub, count(sub) as cnt from reddit_with_duplicates group by sub having cnt = 1);
+
+insert into reddit_deduped select distinct(sub) from (select sub, count(sub) as cnt from reddit_with_duplicates group by sub having cnt > 1);
+```
+
+## User Activity processing: order of execution
 
 ### Get and save necessary Reddit tokens
 
