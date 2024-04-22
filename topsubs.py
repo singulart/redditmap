@@ -1,3 +1,5 @@
+# Computes Top 50 subreddits by interacting users count
+
 import redis
 import os
 import re 

@@ -3,6 +3,7 @@ import re
 import subprocess
 
 # Any subreddit that is interacted with by less than 'link_weight_to_remove' Redditors will be removed from the map
+# This script was useful when I used Obsidian to visuaize interactions, but may not be useful otherwise
 link_weight_to_remove = 100 
 
 def grep_search(directory, pattern: str):
