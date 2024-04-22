@@ -1,5 +1,5 @@
 # Saves names of all "new" Reddit subreddits to a database table
-
+# TODO convert to Celery task ?
 # Filters used:
 # 1. Subscribers number
 # 2. Public subreddits only
