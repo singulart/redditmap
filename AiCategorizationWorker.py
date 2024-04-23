@@ -34,11 +34,11 @@ def categorize(subreddits_list):
 find three levels of categories, from the most specific one to the most generic one. Output all three like so:
 x. <Most generic Category>, <More specific category>, <Most specific category>
 "x" is the position of a subreddit in the list. 
-Limit every category to maximum of three words.  Do NOT output anything else. Do this for every input subreddit, don't skip anything.
+Use alphanumeric characters only. Limit every category to maximum of three words. Do NOT output anything else. Do this for every input subreddit, don't skip anything.
 """             }]
             )
         chatGpt_response = response_turbo.choices[0].message.content
-        logger.info(chatGpt_response)
+        logger.info("Got AI response. Parsing...")
         
         subreddits_list_no_numbers = [re.sub(r'(\d+\. )', '', s) for s in subreddits_list.split('\n') if s != '']
         data_to_store = []
@@ -46,8 +46,16 @@ Limit every category to maximum of three words.  Do NOT output anything else. Do
         for iii in range(len(split)):
             categorized_sub = re.sub(r'(\d+\. )', '', split[iii])
             categories = [c.strip() for c in categorized_sub.split(', ')]
+            if len(categories) != 3: 
+                logger.warn(categories)
             data_to_store.append((subreddits_list_no_numbers[iii], *categories, ))
         
-        logger.info(data_to_store)
-        cur.executemany('INSERT INTO reddit_subs_categorized (sub, cat, subcat, niche) VALUES (?, ?, ?, ?)', data_to_store)
-        conn.commit()
+        logger.info("Storing categorized subreddits...")
+        try: 
+            cur.executemany('INSERT INTO reddit_subs_categorized (sub, cat, subcat, niche) VALUES (?, ?, ?, ?)', data_to_store)
+            conn.commit()
+        except sqlite3.ProgrammingError as er:
+            logger.error(er.sqlite_errorname)
+            logger.warn(data_to_store)
+        finally:
+            conn.close()
