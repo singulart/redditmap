@@ -1,4 +1,5 @@
 # Saves names of 'best' Reddit subreddits to a database table
+# TODO Parallel execution of this task doesn't produce good result. Luckily, even single thread works fast enough
 
 import sqlite3
 import requests
@@ -31,7 +32,7 @@ def save_best_communities(pagenum):
             
     sub_names_matches = [match for match in re.findall(regex_pattern, subs_response.text)]
     sub_names = [(s, ) for s in set(sub_names_matches)]
-    logger.info('HTTP call + regexp took {} ms.'.format((datetime.datetime.now() - now).total_seconds()))
+    # logger.info('HTTP call + regexp took {} ms.'.format((datetime.datetime.now() - now).total_seconds()))
     
     # This produces 1300+ duplicated records, see README.md on how to dedup using SQL
     cur.executemany('INSERT INTO reddit_subs_best (sub) VALUES (?)', sub_names)
