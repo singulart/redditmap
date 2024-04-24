@@ -44,7 +44,7 @@ Note: Update the counter inside if needed (currently set to 1285)
 
 ### Run Celery task that fetches subreddits and saves to SQLite3 db
 
-`celery --app=savebestcommunities worker --concurrency=32 -l info`
+`celery --app=subs_extraction.savebestcommunities worker --concurrency=32 -l info`
 
 Note: this may produce a lot of 429 errors. 
 
@@ -66,7 +66,7 @@ insert into reddit_deduped select distinct(sub) from (select sub, count(sub) as 
 
 ### Fetch 'new' subreddits, if needed
 
-`CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 savenewcommunities.py`
+`CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 subs_extraction/savenewcommunities.py`
 
 I found this useful, as it added 16k unique subreddits (5%) to ~310k of subreddits grabbed in previous step
 
@@ -91,3 +91,8 @@ Spin up several Celery worker tasks:
 `celery --app=processusers worker --concurrency=<number of apps in appconfig.json> -l info`
 
 NOTE: Celery worker tasks can be ran in parallel with users collecting. If there is no user to process, workers will quietly wait.
+
+
+### Cleanup if needed
+
+run `python3 analytics/cleanup.py`

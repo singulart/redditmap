@@ -55,6 +55,6 @@ def process_files(directory, regex_pattern):
                 remove_irrelevant_subreddits(directory, match)
 
 # Example usage
-directory = './cleanup-experiment'
+directory = '../cleanup-experiment'
 regex_pattern = r'([\[]{2}\w*[\]]{2})'
 process_files(directory, regex_pattern)

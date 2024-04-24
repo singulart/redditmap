@@ -7,8 +7,11 @@ import re
 import datetime
 from celery import Celery
 from celery.utils.log import get_task_logger
+import sys
 
-app = Celery(config_source='celeryconfig')
+sys.path.append('../celeryconfig')
+
+app = Celery(config_source="celeryconfig")
 logger = get_task_logger(__name__)
 
 @app.task(name='Save Best Reddits')
@@ -17,7 +20,7 @@ def save_best_communities(pagenum):
     regex_pattern = r'(\/r\/\w+)'
 
     # Establish a connection to the SQLite database file
-    conn = sqlite3.connect('reddit.db')
+    conn = sqlite3.connect('../reddit.db')
     # Create a cursor object using the connection
     cur = conn.cursor()
 

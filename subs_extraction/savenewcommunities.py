@@ -23,7 +23,7 @@ def main():
     api_pagination_cursor = None
 
     # Establish a connection to the SQLite database file
-    conn = sqlite3.connect('reddit.db')
+    conn = sqlite3.connect('../reddit.db')
     cur = conn.cursor()
 
     # Create a table (if it does not already exist)
@@ -66,6 +66,7 @@ def main():
         # Catch a keyboard interrupt (CTRL+C) to provide a way to stop the loop gracefully
         print("\nStopping...")
     finally:
+        conn.close()
         pbar.close()  # Ensure the progress bar is properly closed
         print("Task completed or stopped.")            
 
