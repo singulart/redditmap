@@ -1,3 +1,5 @@
+### WARNING: Running this code will spend funds from your OpenAI platform credit. 
+### Refer to https://platform.openai.com/settings/organization/billing/overview for more details.
 import multiprocessing
 import sqlite3
 import re
