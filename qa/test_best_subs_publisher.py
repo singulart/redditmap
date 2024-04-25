@@ -1,6 +1,3 @@
-# Saves names of 'best' Reddit subreddits to a database table
-# TODO Parallel execution of this task doesn't produce good result. Luckily, even single thread works fast enough
-
 import sqlite3
 import requests
 import re
@@ -11,9 +8,8 @@ import logging
 logger = get_task_logger(__name__)
 logging.basicConfig(level = logging.INFO)
 
-def save_best_communities(pagenum):
+def reconcile_saved_data(pagenum):
     
-
     # Create a table (if it does not already exist)
     cur.execute('CREATE TABLE IF NOT EXISTS reddit_subs_best (sub VARCHAR(64))')
     
@@ -35,13 +31,10 @@ def save_best_communities(pagenum):
 if __name__ == "__main__":
     regex_pattern = r'(\/r\/\w+)'
 
-    # Establish a connection to the SQLite database file
     conn = sqlite3.connect('reddit.db')
-    # Create a cursor object using the connection
     cur = conn.cursor()
 
     for i in range(1, 682): 
-        save_best_communities(i)
-        
+        reconcile_saved_data(i)
         
     cur.close()
