@@ -10,7 +10,9 @@ This tool uses Celery library with Redis broker as a backend. Tested on 64 bit R
 Run Redis locally with 1-minute data persistence interval: `docker run --name reddit -d -p 6379:6379 redis redis-server --save 60 1`
 Data persistence makes data written to Redis available after restart.
 
-Connecting to the running Redis instance using `redis-cli`: 
+To connect to Redis using nice UI, use Redis Insight app. 
+
+Alternatively, connecting to the running Redis instance using `redis-cli` is also possible: 
 
 - Create a network `docker network create reddit-network`
 - Connect a network to the container `docker network connect reddit-network reddit`
@@ -44,13 +46,13 @@ Note: Update the counter inside if needed (currently set to 1285)
 
 ### Run Celery task that fetches subreddits and saves to SQLite3 db
 
-`celery --app=subs_extraction.savebestcommunities worker --concurrency=32 -l info`
+From terminal: `celery --app=subs_extraction.savebestcommunities worker --concurrency=32 -l info`
 
 Note: this may produce a lot of 429 errors. 
 
 ### Check data in SQLite
 
-`sqlite3 reddit.db`
+From terminal: `sqlite3 reddit.db`
 
 `select count(*) from reddit_subs_best;`
 
@@ -66,7 +68,7 @@ insert into reddit_deduped select distinct(sub) from (select sub, count(sub) as 
 
 ### Fetch 'new' subreddits, if needed
 
-`CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 subs_extraction/savenewcommunities.py`
+From terminal: `CLIENT_ID=<client id> CLIENT_SECRET=<secret> python3 subs_extraction/savenewcommunities.py`
 
 I found this useful, as it added 16k unique subreddits (5%) to ~310k of subreddits grabbed in previous step
 

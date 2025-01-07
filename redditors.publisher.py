@@ -4,11 +4,10 @@ import sys
 
 from processusers import process_redditor_activity
 
-start_subreddit = 'HENRYFinance'
 reddit_api = 'https://oauth.reddit.com'
 author_expression = parse('$..author')
 
-def process_posts_type(post_type, redditors, session_token): 
+def process_posts_type(start_subreddit, post_type, redditors, session_token): 
     print(f'Processing {post_type} posts')
     api_pagination_cursor = None
     while True:
@@ -75,9 +74,7 @@ def publish_users_from_search_results(search_term, redditors, session_token):
         if not posts_response:
             break
                 
-        authors = [match.value for match in author_expression.find(posts_response)]
-        # for user in authors:
-        #     process_redditor_activity.delay(user.rstrip()) # push to Redis
+        authors = [match.value.strip() for match in author_expression.find(posts_response)]
         redditors.extend(authors) # this is more for statistics
         
         for record in posts_response['data']['children']:
@@ -92,14 +89,8 @@ def publish_users_from_search_results(search_term, redditors, session_token):
             if not artcle_comments_response:
                 break
             
-            # print(artcle_comments_response)
-
-            authors = [match.value for match in author_expression.find(artcle_comments_response)]
-            # print(f'Authors: {len(authors)}')
-
-            # for user in authors:
-            #     process_redditor_activity.delay(user.rstrip()) # push to Redis
-            redditors.extend(authors) # this is more for statistics
+            authors = [match.value.strip() for match in author_expression.find(artcle_comments_response)]
+            redditors.extend(authors) 
                     
         
         print(f'Found {len(redditors)} non-unique users so far..')
@@ -115,18 +106,23 @@ def main():
     session_token = get_api_token()
 
     redditors = []
+    
+    ## Extract from search results
     q = 'Tom Ford'
     publish_users_from_search_results(q, redditors, session_token)
-    # process_posts_type('new', redditors, session_token)
-    # process_posts_type('top', redditors, session_token)
-    # process_posts_type('hot', redditors, session_token)
-    # process_posts_type('controversial', redditors, session_token)
+    
+    ## Or extract from one source reddit
+    # start_subreddit = 'HENRYFinance'
+    # process_posts_type(start_subreddit, 'new', redditors, session_token)
+    # process_posts_type(start_subreddit, 'top', redditors, session_token)
+    # process_posts_type(start_subreddit, 'hot', redditors, session_token)
+    # process_posts_type(start_subreddit, 'controversial', redditors, session_token)
 
     redditor_set = set(redditors)
     print(f'Total unique redditors: {len(redditor_set)}')
 
-    # for redditor in redditor_set:
-    #     process_redditor_activity.delay(redditor.rstrip()) # push to Redis
+    for redditor in redditor_set:
+        process_redditor_activity.delay(redditor) # push to Redis
 
     print(f'Sent users to Redis. All OK.')
 
