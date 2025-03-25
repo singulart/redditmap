@@ -1,6 +1,5 @@
 from apiclient import *
 from jsonpath_ng import parse
-import sys
 
 from processusers import process_redditor_activity
 

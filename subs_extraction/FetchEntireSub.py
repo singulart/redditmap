@@ -1,10 +1,14 @@
-from apiclient import *
+
 from jsonpath_ng.ext import parse
 from itertools import islice
 import json
-
-from subs_extraction.CommentGrabberWorker import getMoreComments
-from subs_extraction.CommentPersisterWorker import persistComments
+import sys
+import os
+sys.path.append('../celeryconfig')
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from apiclient import *
+from CommentGrabberWorker import getMoreComments
+from CommentPersisterWorker import persistComments
 
 reddit_api = 'https://oauth.reddit.com'
 
@@ -71,24 +75,23 @@ def process_posts_type(target_subreddit, post_type, session_token):
                 # TODO persist threads
                 # print(json.dumps(artcle_comments_response, indent=4))
                 print(json.dumps(artcle_comments_response, indent=4))
-                print(len(artcle_comments_response))
                             
                 for listing in artcle_comments_response:
                     for comment in listing['data']['children']:
                         if comment['kind'] == 't1': 
                             persistComments.delay(
                                 {
-                                    'id': comment['data']['id'],
-                                    'parent': comment['data']['parent_id'],
+                                    'comment_id': comment['data']['id'],
+                                    'parent_id': comment['data']['parent_id'],
                                     'body': comment['data']['body'],
-                                    'ups': comment['data']['ups'],
-                                    'thread': comment['data']['link_id'],
+                                    'score': comment['data']['ups'],
+                                    'created_at': comment['data']['created'],
+                                    'post_id': comment['data']['link_id'],
                                     'author': comment['data']['author']
                                 }
                             )
 
                 additional_comment_ids = [match.value for match in more_comments_expression.find(artcle_comments_response)]
-                print(len(additional_comment_ids))
                 if len(additional_comment_ids) > 0 and additional_comment_ids[0] == '_': 
                     continue
                 if len(additional_comment_ids) == 0: 

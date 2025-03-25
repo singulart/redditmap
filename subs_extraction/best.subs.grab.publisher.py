@@ -1,4 +1,4 @@
-from savebestcommunities import save_best_communities
+from subs_extraction.PersistBestSubsWorker import save_best_communities
 
 def main():
 
