@@ -35,7 +35,7 @@ def print_comment_state(comment: CommentsStaging):
         value = getattr(comment, attr, None)
         print(f"  {attr:12}: {value}")
         
-@app.task(name='Comment Persister', base=Batches, flush_every=2000, flush_interval=10)
+@app.task(name='Comment Persister', base=Batches, flush_every=256, flush_interval=10)
 def persistComments(comments): 
     records = []
     for simple_request in comments:

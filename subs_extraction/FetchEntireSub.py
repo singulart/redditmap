@@ -74,7 +74,7 @@ def process_posts_type(target_subreddit, post_type, session_token):
                 )
                 # TODO persist threads
                 # print(json.dumps(artcle_comments_response, indent=4))
-                print(json.dumps(artcle_comments_response, indent=4))
+                # print(json.dumps(artcle_comments_response, indent=4))
                             
                 for listing in artcle_comments_response:
                     for comment in listing['data']['children']:
@@ -116,9 +116,9 @@ def main():
 
     target_subreddit = 'SaaS'
     process_posts_type(target_subreddit, 'new', session_token)
-    # process_posts_type(target_subreddit, 'top', session_token)
-    # process_posts_type(target_subreddit, 'hot', session_token)
-    # process_posts_type(target_subreddit, 'controversial', session_token)
+    process_posts_type(target_subreddit, 'top', session_token)
+    process_posts_type(target_subreddit, 'hot', session_token)
+    process_posts_type(target_subreddit, 'controversial', session_token)
 
     # for redditor in redditor_set:
     #     process_redditor_activity.delay(redditor) # push to Redis
