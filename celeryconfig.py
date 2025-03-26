@@ -5,6 +5,10 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 
 # imports = ('processusers', 'subs_extraction.savebestcommunities', 'AiCategorizationWorker')
 
-imports = ('subs_extraction.CommentGrabberWorker', 'subs_extraction.CommentPersisterWorker')
+imports = (
+    'subs_extraction.CommentGrabberWorker', 
+    'subs_extraction.CommentPersisterWorker', 
+    'subs_extraction.FetchEntireSubWorker'
+)
 
 result_backend = 'redis://localhost:6379/0'

@@ -14,7 +14,8 @@ from sqlalchemy.dialects.postgresql import insert
 from celeryconfig import *
 from subs_extraction.models import CommentsStaging
 
-engine = create_engine(DATABASE_URL, echo=True)
+# engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -30,12 +31,12 @@ def print_comment_state(comment: CommentsStaging):
         'body', 'author', 'created_at', 'score', 'depth'
     ]
 
-    print("📌 Comment State:")
+    logger.info("📌 Comment State:")
     for attr in attrs:
         value = getattr(comment, attr, None)
         print(f"  {attr:12}: {value}")
         
-@app.task(name='Comment Persister', base=Batches, flush_every=256, flush_interval=10)
+@app.task(name='Staging Comment Persister', base=Batches, flush_every=256, flush_interval=10)
 def persistComments(comments): 
     records = []
     for simple_request in comments:
